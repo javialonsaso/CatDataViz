@@ -17,9 +17,11 @@ from dataObject import DataObject
 from sklearn.manifold import MDS, TSNE, Isomap
 
 # Load dataframe
+print('Loading data...')
 data = ld.dataLoader()
 
 # Create dataObject object
+print('Creating dataObject instance...')
 do = DataObject(data)
 
 # Different methods for embedding
@@ -60,13 +62,17 @@ tsne = TSNE(n_components=2,
 )
 
 # Data embedding
+print('2D embedding method...')
 do.embedding(tsne)
 
 # Border vertices of GMap
-patches_x, patches_y, labels, labels_num = do.gmap()
+print('GMap algorithm...')
+k = 0
+patches_x, patches_y, labels, labels_num = do.gmap(k = k)
 
 
 ### GRAPH ###
+print('Drawing...')
 from bokeh.plotting import figure, show
 from bokeh.models import ColumnDataSource
 from bokeh.palettes import Spectral8, Spectral4, PuOr, magma
@@ -79,14 +85,16 @@ TOOLTIPS = [
 ]
 
 # Create figure
-p = figure(tools="pan,lasso_select,box_select,wheel_zoom,hover", tooltips = TOOLTIPS)
+p = figure(title = data.columns[k],
+    tools="pan,lasso_select,box_select,wheel_zoom,hover", tooltips = TOOLTIPS)
 p.sizing_mode = 'stretch_both'
 
 # Objecto to save data positions
 drawData = ColumnDataSource(dict(
     x = do.euclid2d[:,0],
     y = do.euclid2d[:,1],
-    id = [id for id in data.index.tolist()]
+    id = [id for id in data.index.tolist()],
+    lbl = data.iloc[:,k],
 ))
 
 # Object to save patch display information
@@ -95,8 +103,8 @@ patches = ColumnDataSource(dict(
     xs = patches_x,
     ys = patches_y,
     color = [palette[i] for i in labels_num],
+    id = [i for i in range(len(patches_x))],
     lbl = labels,
-    id = labels,
 ))
 
 # Create glyphs on figure
