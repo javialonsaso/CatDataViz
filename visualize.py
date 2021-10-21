@@ -85,7 +85,7 @@ TOOLTIPS = [
 ]
 
 # Create figure
-p = figure(title = data.columns[k],
+p = figure(title = str(data.columns[k]),
     tools="pan,lasso_select,box_select,wheel_zoom,hover", tooltips = TOOLTIPS)
 p.sizing_mode = 'stretch_both'
 
